@@ -1,6 +1,5 @@
-const canvas = <HTMLCanvasElement>document.getElementById("js-paint");
+const canvas = <HTMLCanvasElement>document.getElementById("april_canvas");
 const context = <CanvasRenderingContext2D>canvas.getContext("2d");
-const strokeInput = <HTMLInputElement>document.getElementById("js-line");
 
 let b_painting: boolean = false;
 let b_filling: boolean = false;
@@ -14,68 +13,84 @@ context.fillRect(0, 0, canvas.width, canvas.height);
 context.strokeStyle = "#000000";
 
 // mouse move event listener
-const onMouseMove = (event: MouseEvent) => {
+function OnMouseMove(event: MouseEvent): void 
+{
     if (b_filling)
         return;
-    if (!b_painting) {
+
+    if (!b_painting) 
+    {
         context.beginPath();
         context.moveTo(event.offsetX, event.offsetY);
-    } else {
+    } 
+    else 
+    {
         context.lineTo(event.offsetX, event.offsetY);
         context.stroke();
     }
-};
+}
 
-const startPainting = () => (b_painting = true);
-const stopPainting = () => (b_painting = false);
+function StartPainting(): void 
+{
+    b_painting = true;
+}
 
-const onRangeChange = (e: Event) => {
-    const target = e.target;
-    context.lineWidth = (<HTMLInputElement>e.target).valueAsNumber;
-};
+function StopPainting(): void 
+{
+    b_painting = false;
+}
 
-const onColorClick = (e: MouseEvent) => {
-    const target = <HTMLDivElement>e.target;
-    context.strokeStyle = target.style.backgroundColor;
-};
+function OnClickColor(e: MouseEvent): void {
+    if (e.target instanceof HTMLElement)
+        context.strokeStyle = e.target.style.backgroundColor;
+}
 
-const startFilling = () => (b_filling = true);
-const stopFilling = () => (b_filling = false);
+function StartFilling(): void 
+{
+    b_filling = true;
+}
 
-const onCanvasClick = () => {
-    if (b_filling) {
+function StopFilling(): void
+{
+    b_filling = false;
+}
+
+function OnClickCanvas(): void
+{
+    if (b_filling) 
+    {
         context.closePath();
         context.beginPath();
         context.fillStyle = context.strokeStyle;
         context.fillRect(0, 0, canvas.width, canvas.height);
     }
-};
+}
 
-const saveImage = () => {
+function OnClickSaveImage(): void 
+{
     const a = <HTMLAnchorElement>document.createElement("a");
     a.href = canvas.toDataURL("image/jpeg");
     a.download = "paintJSExport";
     a.click();
 }
 
-let lineStarted: boolean = false;
-const startDrawLine = () => (lineStarted = true);
-const stopDrawLine = () => (lineStarted = false);
+function OnChangeInput(e: Event): void 
+{
+    if (e.target instanceof HTMLInputElement)
+        context.lineWidth = e.target.valueAsNumber;
+}
 
 document.querySelectorAll<HTMLElement>(".color").forEach(color =>
-    color.addEventListener("click", onColorClick, false)
+    color.addEventListener("click", OnClickColor, false)
 );
 
-canvas.addEventListener("mousemove", onMouseMove, false);
-canvas.addEventListener("mousedown", startPainting, false);
-canvas.addEventListener("mouseup", stopPainting, false);
-canvas.addEventListener("mouseleave", stopPainting, false);
-canvas.addEventListener("click", onCanvasClick, false);
+canvas.addEventListener("mousemove", OnMouseMove, false);
+canvas.addEventListener("mousedown", StartPainting, false);
+canvas.addEventListener("mouseup", StopPainting, false);
+canvas.addEventListener("mouseleave", StopPainting, false);
+canvas.addEventListener("click", OnClickCanvas, false);
 
-document.getElementById("js-fill")?.addEventListener("click", startFilling, false);
-document.getElementById("js-draw")?.addEventListener("click", stopFilling, false);
-document.getElementById("js-save")?.addEventListener("click", saveImage, false);
-
-strokeInput.addEventListener("input", onRangeChange, false);
-document.getElementById("js-line")?.addEventListener("click", startDrawLine, false);
-document.getElementById("js-line")?.addEventListener("click", stopDrawLine, false);
+document.getElementById("fill_button")?.addEventListener("click", StartFilling, false);
+document.getElementById("paint_button")?.addEventListener("click", StopFilling, false);
+document.getElementById("save_button")?.addEventListener("click", OnClickSaveImage, false);
+document.getElementById("line_width_control_input")?.addEventListener("input", OnChangeInput, false);
