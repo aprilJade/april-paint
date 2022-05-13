@@ -4,7 +4,6 @@ const context = <CanvasRenderingContext2D>canvas.getContext("2d");
 let b_painting: boolean = false;
 let b_filling: boolean = false;
 
-// initialize canvas
 canvas.width = 700;
 canvas.height = 700;
 context.lineWidth = 2.5;
@@ -12,7 +11,6 @@ context.fillStyle = "#ffffff";
 context.fillRect(0, 0, canvas.width, canvas.height);
 context.strokeStyle = "#000000";
 
-// mouse move event listener
 function OnMouseMove(event: MouseEvent): void 
 {
     if (b_filling)
