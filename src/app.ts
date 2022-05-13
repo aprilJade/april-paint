@@ -4,12 +4,18 @@ const context = <CanvasRenderingContext2D>canvas.getContext("2d");
 let b_painting: boolean = false;
 let b_filling: boolean = false;
 
-canvas.width = 700;
-canvas.height = 700;
+canvas.width = 800;
+canvas.height = 800;
 context.lineWidth = 2.5;
-context.fillStyle = "#ffffff";
-context.fillRect(0, 0, canvas.width, canvas.height);
 context.strokeStyle = "#000000";
+
+function EraseCanvas(): void
+{
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+EraseCanvas();
 
 function OnMouseMove(event: MouseEvent): void 
 {
@@ -28,29 +34,9 @@ function OnMouseMove(event: MouseEvent): void
     }
 }
 
-function StartPainting(): void 
-{
-    b_painting = true;
-}
-
-function StopPainting(): void 
-{
-    b_painting = false;
-}
-
 function OnClickColor(e: MouseEvent): void {
     if (e.target instanceof HTMLElement)
         context.strokeStyle = e.target.style.backgroundColor;
-}
-
-function StartFilling(): void 
-{
-    b_filling = true;
-}
-
-function StopFilling(): void
-{
-    b_filling = false;
 }
 
 function OnClickCanvas(): void
@@ -79,16 +65,21 @@ function OnChangeInput(e: Event): void
 }
 
 document.querySelectorAll<HTMLElement>(".color").forEach(color =>
-    color.addEventListener("click", OnClickColor, false)
+    color.addEventListener("click", OnClickColor)
 );
 
-canvas.addEventListener("mousemove", OnMouseMove, false);
-canvas.addEventListener("mousedown", StartPainting, false);
-canvas.addEventListener("mouseup", StopPainting, false);
-canvas.addEventListener("mouseleave", StopPainting, false);
-canvas.addEventListener("click", OnClickCanvas, false);
+if (canvas instanceof HTMLCanvasElement)
+{
+    canvas.addEventListener("mousemove", OnMouseMove);
+    canvas.addEventListener("mousedown", () => (b_painting = true));
+    canvas.addEventListener("mouseup", () => (b_painting = false));
+    canvas.addEventListener("mouseleave", () => (b_painting = false));
+    canvas.addEventListener("click", OnClickCanvas);
+}
 
-document.getElementById("fill_button")?.addEventListener("click", StartFilling, false);
-document.getElementById("paint_button")?.addEventListener("click", StopFilling, false);
-document.getElementById("save_button")?.addEventListener("click", OnClickSaveImage, false);
-document.getElementById("line_width_control_input")?.addEventListener("input", OnChangeInput, false);
+document.getElementById("fill_button")?.addEventListener("click", () => (b_filling = true));
+document.getElementById("paint_button")?.addEventListener("click", () => (b_filling = false));
+document.getElementById("save_button")?.addEventListener("click", OnClickSaveImage);
+document.getElementById("erase_button")?.addEventListener("click", EraseCanvas);
+
+document.getElementById("line_width_control")?.addEventListener("input", OnChangeInput);
