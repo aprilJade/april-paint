@@ -1,5 +1,4 @@
 # april paint
-
 This is my first front-end project. Draw something and save it if you want.
 
 ## How to draw
@@ -7,7 +6,7 @@ This is my first front-end project. Draw something and save it if you want.
 ```
 git clone https://github.com/aprilJade/april-paint.git
 ```
-2. Install typescript module if not installed typescript as global
+2. Install typescript module if not installed typescript as global in your device
 ```
 cd april-paint
 npm install typescript
@@ -16,7 +15,7 @@ npm install typescript
 ```
 npx tsc
 ```
-4. Open html in your browser and enjoy it!
+4. Open index.html at src directory in your browser and enjoy it!
 
 ## To do
 - [ ] Implementation
