@@ -19,15 +19,15 @@ npx tsc
 4. Open html in your browser and enjoy it!
 
 ## To do
-- [] Implement
-    - [] Support various shape
+- [ ] Implement
+    - [ ] Support various shape
         - [x] Line
-        - [] Triangle
-        - [] Square
-        - [] Rectangle
-        - [] Circle
-        - [] Star(?)
-    - [] Support user custom palette
-    - [] Undo
-    - [] Redo
-    - [] User define canvas size 
+        - [ ] Triangle
+        - [ ] Square
+        - [ ] Rectangle
+        - [ ] Circle
+        - [ ] Star(?)
+    - [ ] Support user custom palette
+    - [ ] Undo
+    - [ ] Redo
+    - [ ] User define canvas size 
