@@ -16,7 +16,6 @@ class IPos
     }
 }
 
-
 enum e_drawingMode
 {
     fill,
