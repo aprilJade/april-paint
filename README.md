@@ -31,6 +31,6 @@ npx tsc
         - [x] Fixed palette
         - [ ] Support user custom palette
     - [ ] Usability
-        - [ ] Undo
+        - [x] Undo
         - [ ] Redo
     - [ ] User define canvas size 
