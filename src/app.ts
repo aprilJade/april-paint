@@ -25,7 +25,7 @@ class CStack
     get size() { return this.m_top; };
 }
 
-class IPos 
+class CPos 
 {
     private m_x: number;
     private m_y: number;
@@ -61,7 +61,7 @@ canvas.width = 800;
 canvas.height = 800;
 context.lineWidth = 2.5;
 context.strokeStyle = "#000000";
-let startPos: IPos = new IPos(0, 0);
+let startPos: CPos = new CPos(0, 0);
 let drawingMode: e_drawingMode;
 const img = new Image();
 drawingMode = e_drawingMode.normal;
