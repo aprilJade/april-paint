@@ -36,7 +36,7 @@ context.lineWidth = 2.5;
 context.strokeStyle = "#000000";
 let startPos: IPos = new IPos(0, 0);
 let drawingMode: e_drawingMode;
-
+const img = new Image();
 drawingMode = e_drawingMode.normal;
 
 function EraseCanvas(): void
@@ -59,8 +59,14 @@ function OnMouseMove(event: MouseEvent): void
         context.beginPath();
         context.moveTo(event.offsetX, event.offsetY);
     }
+    if (b_drawLine)
+    {
+        context.drawImage(img, 0, 0);
+        context.moveTo(startPos.x, startPos.y);
+        context.lineTo(event.offsetX, event.offsetY);
+        context.stroke();
+    }
 }
-
 function OnMouseDown(event: MouseEvent): void
 {
     switch (drawingMode)
@@ -70,6 +76,7 @@ function OnMouseDown(event: MouseEvent): void
             break;
         case e_drawingMode.line:
             b_drawLine = true;
+            img.src = canvas.toDataURL();
             startPos.setPos(event.offsetX, event.offsetY);
             break;
         case e_drawingMode.normal:
