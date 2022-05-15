@@ -1,3 +1,30 @@
+class CStack
+{
+    private data: string[];
+    private m_top: number;
+
+    constructor()
+    {
+        this.data = [];
+        this.m_top = 0;
+    }
+    public pop(): string | null
+    {
+        if (this.m_top > 0)
+            return this.data[this.m_top--];
+        return null;
+    }
+    public push(data: string): void
+    {
+        this.data[++this.m_top] = data;
+    }
+    public top(): string | null
+    {
+        return this.data[this.m_top];
+    }
+    get size() { return this.m_top; };
+}
+
 class IPos 
 {
     private m_x: number;
@@ -38,6 +65,8 @@ let startPos: IPos = new IPos(0, 0);
 let drawingMode: e_drawingMode;
 const img = new Image();
 drawingMode = e_drawingMode.normal;
+const undoStack = new CStack();
+const redoStack = new CStack();
 
 function EraseCanvas(): void
 {
@@ -69,6 +98,7 @@ function OnMouseMove(event: MouseEvent): void
 }
 function OnMouseDown(event: MouseEvent): void
 {
+    undoStack.push(canvas.toDataURL());
     switch (drawingMode)
     {
         case e_drawingMode.fill:
@@ -167,3 +197,20 @@ document.getElementById("line_button")?.addEventListener("click",
 document.getElementById("save_button")?.addEventListener("click", OnClickSaveImage);
 document.getElementById("erase_button")?.addEventListener("click", EraseCanvas);
 document.getElementById("line_width_control")?.addEventListener("input", OnChangeInput);
+
+window.onkeydown = (event: KeyboardEvent) => 
+{
+    if (event.ctrlKey)
+    {
+        if (event.key === "z")
+        {
+            let buf: string | null;
+            buf = undoStack.pop();
+            if (buf !== null)
+            {
+                img.src = buf;
+                img.onload = () => context.drawImage(img, 0, 0);
+            }
+        }
+    }
+}
