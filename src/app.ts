@@ -8,20 +8,29 @@ class CStack
         this.data = [];
         this.m_top = 0;
     }
+
     public pop(): string | null
     {
         if (this.m_top > 0)
             return this.data[this.m_top--];
         return null;
     }
+
     public push(data: string): void
     {
         this.data[++this.m_top] = data;
     }
+
     public top(): string | null
     {
         return this.data[this.m_top];
     }
+
+    public flush(): void
+    {
+        this.data = [];
+    }
+
     get size() { return this.m_top; };
 }
 
@@ -29,13 +38,17 @@ class CPos
 {
     private m_x: number;
     private m_y: number;
+
     constructor(x:number, y: number)
     {
         this.m_x = x;
         this.m_y = y;
     }
+
     public get x(): number { return this.m_x; };
+    
     public get y(): number { return this.m_y; };
+    
     public setPos(x:number, y:number) 
     {
         this.m_x = x;
@@ -88,6 +101,7 @@ function OnMouseMove(event: MouseEvent): void
         context.beginPath();
         context.moveTo(event.offsetX, event.offsetY);
     }
+
     if (b_drawLine)
     {
         context.drawImage(img, 0, 0);
@@ -96,9 +110,11 @@ function OnMouseMove(event: MouseEvent): void
         context.stroke();
     }
 }
+
 function OnMouseDown(event: MouseEvent): void
 {
     undoStack.push(canvas.toDataURL());
+    redoStack.flush();
     switch (drawingMode)
     {
         case e_drawingMode.fill:
@@ -127,10 +143,9 @@ function OnMouseUp(event: MouseEvent): void
         context.stroke();
         b_drawLine = false;
     }
+
     if (b_painting)
-    {
         b_painting = false;
-    }
 }
 
 function OnMouseLeave(): void
@@ -208,6 +223,18 @@ window.onkeydown = (event: KeyboardEvent) =>
             buf = undoStack.pop();
             if (buf !== null)
             {
+                redoStack.push(canvas.toDataURL());
+                img.src = buf;
+                img.onload = () => context.drawImage(img, 0, 0);
+            }
+        }
+        else if (event.key === "Z")
+        {
+            let buf: string | null;
+            buf = redoStack.pop();
+            if (buf !== null)
+            {
+                undoStack.push(canvas.toDataURL());
                 img.src = buf;
                 img.onload = () => context.drawImage(img, 0, 0);
             }
