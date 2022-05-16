@@ -20,17 +20,17 @@ npx tsc
 ## To do
 - [ ] Implementation
     - [ ] Support various shape (draw mode)
-        - [x] Normal
-        - [x] Line
+        - [x] ~~Normal~~
+        - [x] ~~Line~~
         - [ ] Triangle
         - [ ] Square
         - [ ] Rectangle
         - [ ] Circle
         - [ ] Star(?)
     - [ ] Palette
-        - [x] Fixed palette
+        - [x] ~~Fixed palette~~
         - [ ] Support user custom palette
-    - [ ] Usability
-        - [x] Undo
-        - [ ] Redo
+    - [x] ~~Usability~~
+        - [x] ~~Undo~~
+        - [x] ~~Redo~~
     - [ ] User define canvas size 
