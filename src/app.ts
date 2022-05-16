@@ -60,7 +60,8 @@ enum e_drawingMode
 {
     fill,
     normal,
-    line
+    line,
+    rectangle
 }
 
 const canvas = <HTMLCanvasElement>document.getElementById("april_canvas");
@@ -69,6 +70,7 @@ const context = <CanvasRenderingContext2D>canvas.getContext("2d");
 let b_painting: boolean = false;
 let b_filling: boolean = false;
 let b_drawLine: boolean = false;
+let b_drawRect: boolean = false;
 
 canvas.width = 800;
 canvas.height = 800;
@@ -109,6 +111,13 @@ function OnMouseMove(event: MouseEvent): void
         context.lineTo(event.offsetX, event.offsetY);
         context.stroke();
     }
+
+    if (b_drawRect)
+    {
+        context.drawImage(img, 0, 0);
+        context.strokeRect(startPos.x , startPos.y,
+            event.offsetX - startPos.x, event.offsetY - startPos.y);
+    }
 }
 
 function OnMouseDown(event: MouseEvent): void
@@ -122,6 +131,11 @@ function OnMouseDown(event: MouseEvent): void
             break;
         case e_drawingMode.line:
             b_drawLine = true;
+            img.src = canvas.toDataURL();
+            startPos.setPos(event.offsetX, event.offsetY);
+            break;
+        case e_drawingMode.rectangle:
+            b_drawRect = true;
             img.src = canvas.toDataURL();
             startPos.setPos(event.offsetX, event.offsetY);
             break;
@@ -142,6 +156,14 @@ function OnMouseUp(event: MouseEvent): void
         context.lineTo(event.offsetX, event.offsetY);
         context.stroke();
         b_drawLine = false;
+    }
+
+    if (b_drawRect)
+    {
+        context.beginPath();
+        context.strokeRect(startPos.x , startPos.y,
+            event.offsetX - startPos.x, event.offsetY - startPos.y);
+        b_drawRect = false;
     }
 
     if (b_painting)
@@ -184,6 +206,30 @@ function OnChangeInput(e: Event): void
         context.lineWidth = e.target.valueAsNumber;
 }
 
+function Undo():void
+{
+    let buf: string | null;
+    buf = undoStack.pop();
+    if (buf !== null)
+    {
+        redoStack.push(canvas.toDataURL());
+        img.src = buf;
+        img.onload = () => context.drawImage(img, 0, 0);
+    }
+}
+
+function Redo():void
+{
+    let buf: string | null;
+    buf = redoStack.pop();
+    if (buf !== null)
+    {
+        undoStack.push(canvas.toDataURL());
+        img.src = buf;
+        img.onload = () => context.drawImage(img, 0, 0);
+    }
+}
+
 document.querySelectorAll<HTMLElement>(".color").forEach(color =>
     color.addEventListener("click", OnClickColor)
 );
@@ -209,35 +255,23 @@ document.getElementById("line_button")?.addEventListener("click",
     () => (drawingMode = e_drawingMode.line)
 );
 
+document.getElementById("rect_button")?.addEventListener("click",
+    () => (drawingMode = e_drawingMode.rectangle)
+);
+
 document.getElementById("save_button")?.addEventListener("click", OnClickSaveImage);
 document.getElementById("erase_button")?.addEventListener("click", EraseCanvas);
 document.getElementById("line_width_control")?.addEventListener("input", OnChangeInput);
+document.getElementById("undo_button")?.addEventListener("click", Undo);
+document.getElementById("redo_button")?.addEventListener("click", Redo);
 
 window.onkeydown = (event: KeyboardEvent) => 
 {
     if (event.ctrlKey)
     {
         if (event.key === "z")
-        {
-            let buf: string | null;
-            buf = undoStack.pop();
-            if (buf !== null)
-            {
-                redoStack.push(canvas.toDataURL());
-                img.src = buf;
-                img.onload = () => context.drawImage(img, 0, 0);
-            }
-        }
+            Undo();
         else if (event.key === "Z")
-        {
-            let buf: string | null;
-            buf = redoStack.pop();
-            if (buf !== null)
-            {
-                undoStack.push(canvas.toDataURL());
-                img.src = buf;
-                img.onload = () => context.drawImage(img, 0, 0);
-            }
-        }
+            Redo();
     }
 }
