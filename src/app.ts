@@ -274,7 +274,11 @@ document.getElementById("circle_button")?.addEventListener("click",
 );
 
 document.getElementById("save_button")?.addEventListener("click", OnClickSaveImage);
-document.getElementById("erase_button")?.addEventListener("click", EraseCanvas);
+document.getElementById("erase_button")?.addEventListener("click", () => 
+{
+    undoStack.push(canvas.toDataURL());
+    EraseCanvas();
+});
 document.getElementById("line_width_control")?.addEventListener("input", OnChangeInput);
 document.getElementById("undo_button")?.addEventListener("click", Undo);
 document.getElementById("redo_button")?.addEventListener("click", Redo);
