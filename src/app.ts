@@ -61,7 +61,8 @@ enum e_drawingMode
     fill,
     normal,
     line,
-    rectangle
+    rectangle,
+    circle
 }
 
 const canvas = <HTMLCanvasElement>document.getElementById("april_canvas");
@@ -71,6 +72,7 @@ let b_painting: boolean = false;
 let b_filling: boolean = false;
 let b_drawLine: boolean = false;
 let b_drawRect: boolean = false;
+let b_drawCircle: boolean = false;
 
 canvas.width = 800;
 canvas.height = 800;
@@ -90,6 +92,11 @@ function EraseCanvas(): void
 }
 
 EraseCanvas();
+
+function CalcRadious(pos1:CPos, pos2:CPos): number
+{
+    return Math.sqrt(Math.pow(pos1.x - pos2.x, 2) + Math.pow(pos1.y - pos2.y, 2));
+}
 
 function OnMouseMove(event: MouseEvent): void 
 {
@@ -118,6 +125,15 @@ function OnMouseMove(event: MouseEvent): void
         context.strokeRect(startPos.x , startPos.y,
             event.offsetX - startPos.x, event.offsetY - startPos.y);
     }
+
+    if (b_drawCircle)
+    {
+        context.drawImage(img, 0, 0);
+        context.beginPath();
+        context.arc(startPos.x, startPos.y,
+            CalcRadious(startPos, new CPos(event.offsetX, event.offsetY)), 0, Math.PI * 2);
+        context.stroke();
+    }
 }
 
 function OnMouseDown(event: MouseEvent): void
@@ -136,6 +152,11 @@ function OnMouseDown(event: MouseEvent): void
             break;
         case e_drawingMode.rectangle:
             b_drawRect = true;
+            img.src = canvas.toDataURL();
+            startPos.setPos(event.offsetX, event.offsetY);
+            break;
+        case e_drawingMode.circle:
+            b_drawCircle = true;
             img.src = canvas.toDataURL();
             startPos.setPos(event.offsetX, event.offsetY);
             break;
@@ -164,6 +185,15 @@ function OnMouseUp(event: MouseEvent): void
         context.strokeRect(startPos.x , startPos.y,
             event.offsetX - startPos.x, event.offsetY - startPos.y);
         b_drawRect = false;
+    }
+
+    if (b_drawCircle)
+    {
+        context.beginPath();
+        context.arc(startPos.x, startPos.y,
+            CalcRadious(startPos, new CPos(event.offsetX, event.offsetY)), 0, Math.PI * 2);
+        context.stroke();
+        b_drawCircle = false;
     }
 
     if (b_painting)
@@ -230,6 +260,7 @@ function Redo():void
     }
 }
 
+// Add event lisenters...
 document.querySelectorAll<HTMLElement>(".color").forEach(color =>
     color.addEventListener("click", OnClickColor)
 );
@@ -257,6 +288,10 @@ document.getElementById("line_button")?.addEventListener("click",
 
 document.getElementById("rect_button")?.addEventListener("click",
     () => (drawingMode = e_drawingMode.rectangle)
+);
+
+document.getElementById("circle_button")?.addEventListener("click",
+    () => (drawingMode = e_drawingMode.circle)
 );
 
 document.getElementById("save_button")?.addEventListener("click", OnClickSaveImage);
