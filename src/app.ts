@@ -68,11 +68,7 @@ enum e_drawingMode
 const canvas = <HTMLCanvasElement>document.getElementById("april_canvas");
 const context = <CanvasRenderingContext2D>canvas.getContext("2d");
 
-let b_painting: boolean = false;
-let b_filling: boolean = false;
-let b_drawLine: boolean = false;
-let b_drawRect: boolean = false;
-let b_drawCircle: boolean = false;
+let b_drawing: boolean = false;
 
 canvas.width = 800;
 canvas.height = 800;
@@ -100,39 +96,43 @@ function CalcRadious(pos1:CPos, pos2:CPos): number
 
 function OnMouseMove(event: MouseEvent): void 
 {
-    if (b_painting) 
+    if (b_drawing)
     {
-        context.lineTo(event.offsetX, event.offsetY);
-        context.stroke();
-    } 
-    else 
+        switch (drawingMode)
+        {
+            case e_drawingMode.normal:
+                context.lineTo(event.offsetX, event.offsetY);
+                context.stroke();
+                return;
+            case e_drawingMode.line:
+                context.drawImage(img, 0, 0);
+                context.beginPath();
+                context.moveTo(startPos.x, startPos.y);
+                context.lineTo(event.offsetX, event.offsetY);
+                context.stroke();
+                return;
+            case e_drawingMode.rectangle:
+                context.drawImage(img, 0, 0);
+                context.strokeRect(startPos.x , startPos.y,
+                    event.offsetX - startPos.x, event.offsetY - startPos.y);
+                return;
+            case e_drawingMode.circle:
+                context.drawImage(img, 0, 0);
+                context.beginPath();
+                context.arc(startPos.x, startPos.y,
+                    CalcRadious(startPos, new CPos(event.offsetX, event.offsetY)), 0, Math.PI * 2);
+                context.stroke();
+                return;
+            case e_drawingMode.fill:
+                return;
+            default:
+                return;
+        }
+    }
+    else
     {
         context.beginPath();
         context.moveTo(event.offsetX, event.offsetY);
-    }
-
-    if (b_drawLine)
-    {
-        context.drawImage(img, 0, 0);
-        context.moveTo(startPos.x, startPos.y);
-        context.lineTo(event.offsetX, event.offsetY);
-        context.stroke();
-    }
-
-    if (b_drawRect)
-    {
-        context.drawImage(img, 0, 0);
-        context.strokeRect(startPos.x , startPos.y,
-            event.offsetX - startPos.x, event.offsetY - startPos.y);
-    }
-
-    if (b_drawCircle)
-    {
-        context.drawImage(img, 0, 0);
-        context.beginPath();
-        context.arc(startPos.x, startPos.y,
-            CalcRadious(startPos, new CPos(event.offsetX, event.offsetY)), 0, Math.PI * 2);
-        context.stroke();
     }
 }
 
@@ -142,84 +142,64 @@ function OnMouseDown(event: MouseEvent): void
     redoStack.flush();
     switch (drawingMode)
     {
-        case e_drawingMode.fill:
-            b_filling = true;
+        case e_drawingMode.normal:
             break;
         case e_drawingMode.line:
-            b_drawLine = true;
             img.src = canvas.toDataURL();
             startPos.setPos(event.offsetX, event.offsetY);
             break;
         case e_drawingMode.rectangle:
-            b_drawRect = true;
             img.src = canvas.toDataURL();
             startPos.setPos(event.offsetX, event.offsetY);
             break;
         case e_drawingMode.circle:
-            b_drawCircle = true;
             img.src = canvas.toDataURL();
             startPos.setPos(event.offsetX, event.offsetY);
             break;
-        case e_drawingMode.normal:
-            b_painting = true;
+        case e_drawingMode.fill:
             break;
         default:
             break;
     }
+    b_drawing = true;
 }
 
 function OnMouseUp(event: MouseEvent): void
 {
-    if (b_drawLine)
+    b_drawing = false;
+    switch (drawingMode)
     {
-        context.beginPath();
-        context.moveTo(startPos.x, startPos.y);
-        context.lineTo(event.offsetX, event.offsetY);
-        context.stroke();
-        b_drawLine = false;
+        case e_drawingMode.normal:
+            break;
+        case e_drawingMode.line:
+            context.beginPath();
+            context.moveTo(startPos.x, startPos.y);
+            context.lineTo(event.offsetX, event.offsetY);
+            context.stroke();
+            break;
+        case e_drawingMode.rectangle:
+            context.beginPath();
+            context.strokeRect(startPos.x , startPos.y,
+                event.offsetX - startPos.x, event.offsetY - startPos.y);
+            break;
+        case e_drawingMode.circle:
+            context.beginPath();
+            context.arc(startPos.x, startPos.y,
+                CalcRadious(startPos, new CPos(event.offsetX, event.offsetY)), 0, Math.PI * 2);
+            context.stroke();
+            break;
+        case e_drawingMode.fill:
+            context.closePath();
+            context.beginPath();
+            context.fillStyle = context.strokeStyle;
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            break;
     }
-
-    if (b_drawRect)
-    {
-        context.beginPath();
-        context.strokeRect(startPos.x , startPos.y,
-            event.offsetX - startPos.x, event.offsetY - startPos.y);
-        b_drawRect = false;
-    }
-
-    if (b_drawCircle)
-    {
-        context.beginPath();
-        context.arc(startPos.x, startPos.y,
-            CalcRadious(startPos, new CPos(event.offsetX, event.offsetY)), 0, Math.PI * 2);
-        context.stroke();
-        b_drawCircle = false;
-    }
-
-    if (b_painting)
-        b_painting = false;
-}
-
-function OnMouseLeave(): void
-{
-    b_painting = false;
-    b_drawLine = false;
 }
 
 function OnClickColor(e: MouseEvent): void {
     if (e.target instanceof HTMLElement)
         context.strokeStyle = e.target.style.backgroundColor;
-}
-
-function OnClickCanvas(): void
-{
-    if (b_filling) 
-    {
-        context.closePath();
-        context.beginPath();
-        context.fillStyle = context.strokeStyle;
-        context.fillRect(0, 0, canvas.width, canvas.height);
-    }
 }
 
 function OnClickSaveImage(): void 
@@ -270,8 +250,7 @@ if (canvas instanceof HTMLCanvasElement)
     canvas.addEventListener("mousemove", OnMouseMove);
     canvas.addEventListener("mousedown", OnMouseDown);
     canvas.addEventListener("mouseup", OnMouseUp);
-    canvas.addEventListener("click", OnClickCanvas);
-    canvas.addEventListener("mouseleave", OnMouseLeave);
+    canvas.addEventListener("mouseleave", () => (b_drawing = false));
 }
 
 document.getElementById("fill_button")?.addEventListener("click",
