@@ -22,11 +22,8 @@ npx tsc
     - [ ] Support various shape (draw mode)
         - [x] ~~Normal~~
         - [x] ~~Line~~
-        - [ ] Triangle
-        - [ ] Square
         - [x] ~~Rectangle~~
-        - [x] Circle
-        - [ ] Star(?)
+        - [x] ~~Circle~~
     - [ ] Palette
         - [x] ~~Fixed palette~~
         - [ ] Support user custom palette
