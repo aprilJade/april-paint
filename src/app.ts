@@ -145,13 +145,7 @@ function OnMouseDown(event: MouseEvent): void
         case e_drawingMode.normal:
             break;
         case e_drawingMode.line:
-            img.src = canvas.toDataURL();
-            startPos.setPos(event.offsetX, event.offsetY);
-            break;
         case e_drawingMode.rectangle:
-            img.src = canvas.toDataURL();
-            startPos.setPos(event.offsetX, event.offsetY);
-            break;
         case e_drawingMode.circle:
             img.src = canvas.toDataURL();
             startPos.setPos(event.offsetX, event.offsetY);
