@@ -69,17 +69,17 @@ const canvas = <HTMLCanvasElement>document.getElementById("april_canvas");
 const context = <CanvasRenderingContext2D>canvas.getContext("2d");
 
 let b_drawing: boolean = false;
+let startPos: CPos = new CPos(0, 0);
+let drawingMode: e_drawingMode;
+const img = new Image();
+const undoStack = new CStack();
+const redoStack = new CStack();
 
 canvas.width = 800;
 canvas.height = 800;
 context.lineWidth = 2.5;
 context.strokeStyle = "#000000";
-let startPos: CPos = new CPos(0, 0);
-let drawingMode: e_drawingMode;
-const img = new Image();
 drawingMode = e_drawingMode.normal;
-const undoStack = new CStack();
-const redoStack = new CStack();
 
 function EraseCanvas(): void
 {

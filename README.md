@@ -25,7 +25,7 @@ npx tsc
         - [ ] Triangle
         - [ ] Square
         - [x] ~~Rectangle~~
-        - [ ] Circle
+        - [x] Circle
         - [ ] Star(?)
     - [ ] Palette
         - [x] ~~Fixed palette~~
