@@ -1,5 +1,5 @@
 # april paint
-This is my first front-end project. Draw something and save it if you want.
+This is my first front-end project. Draw something and save it if you want. This paint application is an arrangement of [Nomad Coder's PaintJs lecture](https://nomadcoders.co/javascript-for-beginners-2/lobby). 
 
 ## How to draw
 1. Clone this repository.
