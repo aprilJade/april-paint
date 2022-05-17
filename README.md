@@ -19,7 +19,7 @@ npx tsc
 
 ## To do
 - [ ] Implementation
-    - [ ] Support various shape (draw mode)
+    - [x] ~~Support various shape (draw mode)~~
         - [x] ~~Normal~~
         - [x] ~~Line~~
         - [x] ~~Rectangle~~
